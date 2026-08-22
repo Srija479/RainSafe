@@ -1,98 +1,169 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
-
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
-
+import { StyleSheet, View, Pressable, Text } from 'react-native';
+import { useRouter } from 'expo-router';
 export default function HomeScreen() {
+    const router = useRouter();
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.logo}>🌧️ RainSafe</Text>
+        <Text style={styles.subtitle}>Stay safe during heavy rainfall</Text>
+      </View>
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+      <View style={styles.alertCard}>
+        <Text style={styles.alertIcon}>⚠️</Text>
+        <View style={styles.alertContent}>
+          <Text style={styles.alertTitle}>Flood Safety</Text>
+          <Text style={styles.alertText}>
+            Avoid flooded roads and report hidden hazards.
+          </Text>
+        </View>
+      </View>
+
+      <Text style={styles.sectionTitle}>What do you want to do?</Text>
+
+      <Pressable style={styles.primaryButton} onPress={() => router.push('/safety')}>
+        <Text style={styles.buttonIcon}>📍</Text>
+        <View>
+          <Text style={styles.buttonTitle}>Check Road Safety</Text>
+          <Text style={styles.buttonSubtitle}>Find hazards near you</Text>
+        </View>
+      </Pressable>
+
+      <Pressable style={styles.secondaryButton} onPress={() => router.push('/report')}>
+        <Text style={styles.buttonIcon}>🚨</Text>
+        <View>
+          <Text style={styles.secondaryButtonTitle}>Report a Hazard</Text>
+          <Text style={styles.secondaryButtonSubtitle}>Help others stay safe</Text>
+        </View>
+      </Pressable>
+
+      <View style={styles.infoCard}>
+        <Text style={styles.infoTitle}>💡 RainSafe Tip</Text>
+        <Text style={styles.infoText}>
+          Never drive or walk through water when you cannot see the road underneath.
+        </Text>
+      </View>
+
+      <Text style={styles.footer}>Your safety matters. Stay alert. 🌧️</Text>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
+  container: {
+    flex: 1,
+    backgroundColor: '#F4F8FC',
+    paddingHorizontal: 20,
+    paddingTop: 60,
+  },
+  header: {
+    marginBottom: 25,
+  },
+  logo: {
+    fontSize: 32,
+    fontWeight: '800',
+    color: '#1769AA',
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#607D8B',
+    marginTop: 5,
+  },
+  alertCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    backgroundColor: '#FFF3CD',
+    borderRadius: 16,
+    padding: 18,
+    marginBottom: 30,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  alertIcon: {
+    fontSize: 30,
+    marginRight: 14,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  alertContent: {
+    flex: 1,
+  },
+  alertTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#7A5A00',
+  },
+  alertText: {
+    fontSize: 14,
+    color: '#806000',
+    marginTop: 4,
+    lineHeight: 20,
+  },
+  sectionTitle: {
+    fontSize: 21,
+    fontWeight: '700',
+    color: '#263238',
+    marginBottom: 15,
+  },
+  primaryButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#1769AA',
+    borderRadius: 18,
+    padding: 20,
+    marginBottom: 14,
+  },
+  secondaryButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 18,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: '#D6E2EA',
+    marginBottom: 25,
+  },
+  buttonIcon: {
+    fontSize: 30,
+    marginRight: 16,
+  },
+  buttonTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
+  buttonSubtitle: {
+    fontSize: 13,
+    color: '#DCEEFF',
+    marginTop: 4,
+  },
+  secondaryButtonTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#263238',
+  },
+  secondaryButtonSubtitle: {
+    fontSize: 13,
+    color: '#78909C',
+    marginTop: 4,
+  },
+  infoCard: {
+    backgroundColor: '#E3F2FD',
+    borderRadius: 16,
+    padding: 18,
+  },
+  infoTitle: {
+    fontSize: 17,
+    fontWeight: '700',
+    color: '#1565C0',
+    marginBottom: 6,
+  },
+  infoText: {
+    fontSize: 14,
+    lineHeight: 21,
+    color: '#455A64',
+  },
+  footer: {
+    textAlign: 'center',
+    color: '#90A4AE',
+    fontSize: 13,
+    marginTop: 'auto',
+    marginBottom: 15,
   },
 });
