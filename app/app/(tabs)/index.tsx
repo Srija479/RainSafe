@@ -1,8 +1,11 @@
 import { StyleSheet, View, Pressable, Text } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useHazards } from '../HazardContext';
 
 export default function HomeScreen() {
   const router = useRouter();
+  const { hazards } = useHazards();
+  const activeCount = hazards.filter((h) => h.status === 'Active').length;
 
   return (
     <View style={styles.container}>
@@ -14,9 +17,18 @@ export default function HomeScreen() {
       <View style={styles.alertCard}>
         <Text style={styles.alertIcon}>⚠️</Text>
         <View style={styles.alertContent}>
-          <Text style={styles.alertTitle}>Flood Safety</Text>
+          <View style={styles.alertTitleRow}>
+            <Text style={styles.alertTitle}>Flood Safety</Text>
+            {activeCount > 0 && (
+              <View style={styles.countBadge}>
+                <Text style={styles.countBadgeText}>{activeCount} active</Text>
+              </View>
+            )}
+          </View>
           <Text style={styles.alertText}>
-            Avoid flooded roads and report hidden hazards.
+            {activeCount > 0
+              ? `${activeCount} hazard${activeCount > 1 ? 's' : ''} reported nearby. Stay alert.`
+              : 'No active hazards reported nearby.'}
           </Text>
         </View>
       </View>
@@ -57,28 +69,59 @@ const styles = StyleSheet.create({
   logo: { fontSize: 32, fontWeight: '800', color: '#1769AA' },
   subtitle: { fontSize: 16, color: '#607D8B', marginTop: 5 },
   alertCard: {
-    flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFF3CD',
-    borderRadius: 16, padding: 18, marginBottom: 30,
+    flexDirection: 'row',
+    backgroundColor: '#FFF3CD',
+    borderRadius: 18,
+    padding: 18,
+    marginBottom: 30,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 2,
   },
-  alertIcon: { fontSize: 30, marginRight: 14 },
+  alertIcon: { fontSize: 28, marginRight: 14, marginTop: 2 },
   alertContent: { flex: 1 },
+  alertTitleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   alertTitle: { fontSize: 18, fontWeight: '700', color: '#7A5A00' },
-  alertText: { fontSize: 14, color: '#806000', marginTop: 4, lineHeight: 20 },
+  countBadge: { backgroundColor: '#C62828', borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4 },
+  countBadgeText: { color: '#fff', fontSize: 11, fontWeight: '700' },
+  alertText: { fontSize: 14, color: '#806000', marginTop: 6, lineHeight: 20 },
   sectionTitle: { fontSize: 21, fontWeight: '700', color: '#263238', marginBottom: 15 },
   primaryButton: {
-    flexDirection: 'row', alignItems: 'center', backgroundColor: '#1769AA',
-    borderRadius: 18, padding: 20, marginBottom: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#1769AA',
+    borderRadius: 20,
+    padding: 20,
+    marginBottom: 14,
+    shadowColor: '#1769AA',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 10,
+    elevation: 4,
   },
   secondaryButton: {
-    flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFFFFF',
-    borderRadius: 18, padding: 20, borderWidth: 1, borderColor: '#D6E2EA', marginBottom: 25,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: '#E3EAF0',
+    marginBottom: 25,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 6,
+    elevation: 1,
   },
-  buttonIcon: { fontSize: 30, marginRight: 16 },
+  buttonIcon: { fontSize: 28, marginRight: 16 },
   buttonTitle: { fontSize: 18, fontWeight: '700', color: '#FFFFFF' },
   buttonSubtitle: { fontSize: 13, color: '#DCEEFF', marginTop: 4 },
   secondaryButtonTitle: { fontSize: 18, fontWeight: '700', color: '#263238' },
   secondaryButtonSubtitle: { fontSize: 13, color: '#78909C', marginTop: 4 },
-  infoCard: { backgroundColor: '#E3F2FD', borderRadius: 16, padding: 18 },
+  infoCard: { backgroundColor: '#E3F2FD', borderRadius: 18, padding: 18 },
   infoTitle: { fontSize: 17, fontWeight: '700', color: '#1565C0', marginBottom: 6 },
   infoText: { fontSize: 14, lineHeight: 21, color: '#455A64' },
   footer: { textAlign: 'center', color: '#90A4AE', fontSize: 13, marginTop: 'auto', marginBottom: 15 },

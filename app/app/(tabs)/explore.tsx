@@ -4,17 +4,23 @@ import { useHazards, getTimeAgo } from '../HazardContext';
 
 export default function ExploreScreen() {
   const { hazards } = useHazards();
+  const activeCount = hazards.filter((h: any) => h.status === 'Active').length;
+
+ const escapeText = (str: string) =>
+    String(str || '').replace(/\\/g, '\\\\').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/\n/g, ' ');
 
   const markersScript = hazards
     .filter((h: any) => h.latitude && h.longitude)
     .map((h: any) => {
       const timeAgo = getTimeAgo(h.timestamp);
       const statusColor = h.status === 'Active' ? '#C62828' : '#2E7D32';
+      const loc = escapeText(h.location);
+      const desc = escapeText(h.description);
       return `
       L.marker([${h.latitude}, ${h.longitude}])
         .addTo(map)
         .bindPopup(
-          "<b>${h.location}</b><br>${h.description}<br>" +
+          "<b>" + "${loc}" + "</b><br>" + "${desc}" + "<br>" +
           "<span style='color:${statusColor};font-weight:bold'>${h.status}</span> · ${timeAgo}<br>" +
           "<small>${h.latitude.toFixed(5)}, ${h.longitude.toFixed(5)}</small>"
         );
@@ -53,11 +59,17 @@ export default function ExploreScreen() {
         <Text style={styles.title}>Danger Map</Text>
         <Text style={styles.subtitle}>Reported hazards around you</Text>
       </View>
-      <WebView
-        originWhitelist={['*']}
-        source={{ html: mapHTML }}
-        style={styles.map}
-      />
+      <View style={styles.mapWrapper}>
+        <WebView
+          originWhitelist={['*']}
+          source={{ html: mapHTML }}
+          style={styles.map}
+        />
+        <View style={styles.statsCard}>
+          <View style={styles.statsDot} />
+          <Text style={styles.statsText}>{activeCount} Active Hazard{activeCount !== 1 ? 's' : ''}</Text>
+        </View>
+      </View>
     </View>
   );
 }
@@ -67,5 +79,24 @@ const styles = StyleSheet.create({
   header: { padding: 20, paddingTop: 60, backgroundColor: '#F4F8FC' },
   title: { fontSize: 24, fontWeight: 'bold', color: '#1769AA' },
   subtitle: { fontSize: 14, color: '#666', marginTop: 4 },
+  mapWrapper: { flex: 1 },
   map: { flex: 1 },
+  statsCard: {
+    position: 'absolute',
+    top: 14,
+    left: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 24,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  statsDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#C62828', marginRight: 8 },
+  statsText: { fontSize: 13, fontWeight: '700', color: '#263238' },
 });
