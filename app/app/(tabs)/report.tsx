@@ -39,13 +39,15 @@ export default function ReportScreen() {
     const { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
       Alert.alert('Permission needed', 'Please allow location access.');
-      return;
+      return null;
     }
     const location = await Location.getCurrentPositionAsync({});
-    setCoords({
+    const newCoords = {
       latitude: location.coords.latitude,
       longitude: location.coords.longitude,
-    });
+    };
+    setCoords(newCoords);
+    return newCoords;
   };
 
   const handleSubmit = async () => {
@@ -57,19 +59,25 @@ export default function ReportScreen() {
       Alert.alert('Missing info', 'Please describe the hazard.');
       return;
     }
-    if (!coords) {
-      await getLocation();
+
+    let finalCoords = coords;
+    if (!finalCoords) {
+      finalCoords = await getLocation();
     }
+
     addHazard({
       location: selectedType,
       description: description,
       severity: 'Medium',
+      latitude: finalCoords?.latitude,
+      longitude: finalCoords?.longitude,
     });
     Alert.alert('Reported', 'Thanks for keeping others safe!');
     setDescription('');
     setSelectedType(null);
     setPhoto(null);
-    router.push('/safety');
+    setCoords(null);
+    router.push('/explore');
   };
 
   return (
@@ -137,11 +145,7 @@ const styles = StyleSheet.create({
   title: { fontSize: 28, fontWeight: 'bold', color: '#1769AA' },
   headerSubtitle: { fontSize: 14, color: '#666', marginBottom: 20 },
   photoUpload: {
-    backgroundColor: '#DCEEFF',
-    borderRadius: 16,
-    padding: 24,
-    alignItems: 'center',
-    marginBottom: 20,
+    backgroundColor: '#DCEEFF', borderRadius: 16, padding: 24, alignItems: 'center', marginBottom: 20,
   },
   photoEmoji: { fontSize: 36, marginBottom: 8 },
   photoText: { fontSize: 16, fontWeight: '700', color: '#1769AA' },
@@ -149,47 +153,26 @@ const styles = StyleSheet.create({
   photoPreview: { width: '100%', height: 180, borderRadius: 12 },
   sectionLabel: { fontSize: 18, fontWeight: '700', marginBottom: 10, marginTop: 10 },
   typeOption: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F4F8FC',
-    borderRadius: 12,
-    padding: 14,
-    marginBottom: 10,
+    flexDirection: 'row', alignItems: 'center', backgroundColor: '#F4F8FC',
+    borderRadius: 12, padding: 14, marginBottom: 10,
   },
-  typeOptionSelected: {
-    backgroundColor: '#DCEEFF',
-    borderWidth: 2,
-    borderColor: '#1769AA',
-  },
+  typeOptionSelected: { backgroundColor: '#DCEEFF', borderWidth: 2, borderColor: '#1769AA' },
   typeEmoji: { fontSize: 22, marginRight: 12 },
   typeLabel: { fontSize: 16, fontWeight: '600', color: '#263238' },
   label: { fontSize: 14, color: '#666', marginBottom: 8, marginTop: 20 },
   input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 10,
-    padding: 12,
-    minHeight: 100,
-    textAlignVertical: 'top',
-    marginBottom: 20,
+    borderWidth: 1, borderColor: '#ddd', borderRadius: 10, padding: 12,
+    minHeight: 100, textAlignVertical: 'top', marginBottom: 20,
   },
   locationBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#E3F2FD',
-    borderRadius: 12,
-    padding: 14,
-    marginBottom: 20,
+    flexDirection: 'row', alignItems: 'center', backgroundColor: '#E3F2FD',
+    borderRadius: 12, padding: 14, marginBottom: 20,
   },
   locationIcon: { fontSize: 22, marginRight: 10 },
   locationTitle: { fontSize: 15, fontWeight: '700', color: '#1565C0' },
   locationSubtext: { fontSize: 12, color: '#455A64', marginTop: 2 },
   submitButton: {
-    backgroundColor: '#1769AA',
-    padding: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-    marginBottom: 40,
+    backgroundColor: '#1769AA', padding: 16, borderRadius: 12, alignItems: 'center', marginBottom: 40,
   },
   submitButtonText: { color: '#fff', fontSize: 16, fontWeight: '600' },
 });

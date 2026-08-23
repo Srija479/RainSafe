@@ -6,6 +6,8 @@ type Hazard = {
   description: string;
   severity: 'High' | 'Medium' | 'Low';
   time: string;
+  latitude?: number;
+  longitude?: number;
 };
 
 type HazardContextType = {
@@ -17,8 +19,8 @@ const HazardContext = createContext<HazardContextType | undefined>(undefined);
 
 export function HazardProvider({ children }: { children: ReactNode }) {
   const [hazards, setHazards] = useState<Hazard[]>([
-    { id: '1', location: 'MG Road Junction', description: 'Deep water, avoid crossing', severity: 'High', time: '10 min ago' },
-    { id: '2', location: 'Lake View Bridge', description: 'Waterlogged, slow traffic', severity: 'Medium', time: '25 min ago' },
+    { id: '1', location: 'MG Road Junction', description: 'Deep water, avoid crossing', severity: 'High', time: '10 min ago', latitude: 17.4147, longitude: 78.4550 },
+    { id: '2', location: 'Lake View Bridge', description: 'Waterlogged, slow traffic', severity: 'Medium', time: '25 min ago', latitude: 17.4200, longitude: 78.4600 },
   ]);
 
   const addHazard = (hazard: Omit<Hazard, 'id' | 'time'>) => {
