@@ -1,21 +1,25 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { WebView } from 'react-native-webview';
-import { useHazards } from '../HazardContext';
+import { useHazards, getTimeAgo } from '../HazardContext';
 
 export default function ExploreScreen() {
   const { hazards } = useHazards();
 
   const markersScript = hazards
     .filter((h: any) => h.latitude && h.longitude)
-    .map(
-      (h: any) => `
+    .map((h: any) => {
+      const timeAgo = getTimeAgo(h.timestamp);
+      const statusColor = h.status === 'Active' ? '#C62828' : '#2E7D32';
+      return `
       L.marker([${h.latitude}, ${h.longitude}])
         .addTo(map)
         .bindPopup(
-          "<b>${h.location}</b><br>${h.description}<br><small>${h.latitude.toFixed(5)}, ${h.longitude.toFixed(5)}</small>"
+          "<b>${h.location}</b><br>${h.description}<br>" +
+          "<span style='color:${statusColor};font-weight:bold'>${h.status}</span> · ${timeAgo}<br>" +
+          "<small>${h.latitude.toFixed(5)}, ${h.longitude.toFixed(5)}</small>"
         );
-    `
-    )
+    `;
+    })
     .join('\n');
 
   const mapHTML = `
@@ -27,6 +31,7 @@ export default function ExploreScreen() {
       <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
       <style>
         html, body, #map { height: 100%; margin: 0; padding: 0; }
+        .leaflet-popup-content { width: 220px !important; }
       </style>
     </head>
     <body>

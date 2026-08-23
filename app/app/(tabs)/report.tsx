@@ -19,8 +19,7 @@ export default function ReportScreen() {
   const [coords, setCoords] = useState<{ latitude: number; longitude: number } | null>(null);
   const { addHazard } = useHazards();
   const router = useRouter();
-
-  const pickImage = async () => {
+const pickImage = async () => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permission.granted) {
       Alert.alert('Permission needed', 'Please allow photo access.');
@@ -28,10 +27,12 @@ export default function ReportScreen() {
     }
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality: 0.5,
+      quality: 0.3,
+      base64: true,
     });
     if (!result.canceled) {
-      setPhoto(result.assets[0].uri);
+      const asset = result.assets[0];
+      setPhoto(`data:image/jpeg;base64,${asset.base64}`);
     }
   };
 
@@ -71,6 +72,7 @@ export default function ReportScreen() {
       severity: 'Medium',
       latitude: finalCoords?.latitude,
       longitude: finalCoords?.longitude,
+      photo: photo || undefined,
     });
     Alert.alert('Reported', 'Thanks for keeping others safe!');
     setDescription('');
